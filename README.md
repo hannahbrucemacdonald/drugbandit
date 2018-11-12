@@ -1,10 +1,9 @@
-drug_bandit
+drugbandit
 ==============================
 [//]: # (Badges)
-[![Travis Build Status](https://travis-ci.org/REPLACE_WITH_OWNER_ACCOUNT/drug_bandit.png)](https://travis-ci.org/REPLACE_WITH_OWNER_ACCOUNT/drug_bandit)
-[![codecov](https://codecov.io/gh/REPLACE_WITH_OWNER_ACCOUNT/drug_bandit/branch/master/graph/badge.svg)](https://codecov.io/gh/REPLACE_WITH_OWNER_ACCOUNT/drug_bandit/branch/master)
+[![Travis Build Status](https://travis-ci.org/REPLACE_WITH_OWNER_ACCOUNT/drugbandit.png)](https://travis-ci.org/REPLACE_WITH_OWNER_ACCOUNT/drugbandit)
 
-Bayesian Bandit simulation
+Bayesian bandits for optimising free energy simulations
 
 ### Copyright
 
