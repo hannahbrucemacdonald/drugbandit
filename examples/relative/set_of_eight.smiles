@@ -1,0 +1,8 @@
+mobley_3053621; c1ccccc1; benzene; -0.90; 0.20; -0.81; 0.02; 10.1039/P29900000291; 10.1021/acs.jced.7b00104; Experimental uncertainty as suggested by 10.1039/P29900000291 -- 0.2 kcal/mol.  
+mobley_20524; c1ccc(cc1)O; phenol; -6.60; 0.20; -5.71; 0.03; 10.1039/P29900000291; 10.1021/acs.jced.7b00104; Experimental uncertainty as suggested by 10.1039/P29900000291 -- 0.2 kcal/mol.  
+mobley_1873346; Cc1ccccc1; toluene; -0.90; 0.20; -0.79; 0.03; 10.1039/P29900000291; 10.1021/acs.jced.7b00104; Experimental uncertainty as suggested by 10.1039/P29900000291 -- 0.2 kcal/mol.  
+mobley_8809274; c1ccc(cc1)C(F)(F)F; trifluoromethylbenzene; -0.25; 0.60; -0.57; 0.03; 10.1039/P29940001777; 10.1021/acs.jced.7b00104; Experimental uncertainty not presently available, so assigned a default value.  
+mobley_6358463; c1ccc(c(c1)C(F)(F)F)C(F)(F)F; 1,2-bis(trifluoromethyl)benzene; 1.07; 0.60; -1.44; 0.03; 10.1021/ct050097l; 10.1021/acs.jced.7b00104; Experimental uncertainty not presently available, so assigned a default value.  
+mobley_7608462; c1ccc(cc1)Cl; chlorobenzene; -1.12; 0.60; -0.47; 0.02; 10.1021/ct050097l; 10.1021/acs.jced.7b00104; Experimental uncertainty not presently available, so assigned a default value.  
+mobley_1178614; c1ccc(c(c1)O)Cl; 2-chlorophenol; -4.55; 0.60; -3.32; 0.04; 10.1021/ct050097l; 10.1021/acs.jced.7b00104; Experimental uncertainty not presently available, so assigned a default value.  
+mobley_5520946; c1ccc(cc1)S; benzenethiol; -2.55; 0.60; -1.50; 0.03; 10.1021/ct050097l; 10.1021/acs.jced.7b00104; Experimental uncertainty not presently available, so assigned a default value.  
