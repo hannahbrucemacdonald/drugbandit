@@ -19,10 +19,17 @@ class Node(object):
         self.probability = 0.5
         self.a = 1
         self.b = 1
+        self.paths = []
 
-    def plot(self):
+
+    def print_paths(self):
+        print('Printing paths for ligand {}'.format(self.name))
+        for path in self.paths:
+            print(path)
+
+    def plot(self,color='b'):
         x = np.linspace(0.,1.,100)
-        plt.plot(x,scipy.stats.beta.pdf(x,self.a,self.b))
+        plt.plot(x,scipy.stats.beta.pdf(x,self.a,self.b),color=color,alpha=0.3)
         return
 
     def sample(self):
@@ -32,9 +39,8 @@ class Node(object):
         self.a = self.a + success
         self.b = self.b + 1 - success
 
-    def pull(self,lig_ids,edges,benchmark_id=0,n_steps=3):
-        paths = self.find_all_paths(lig_ids,benchmark_id, n_steps)
-        corner_fe, corner_error = self.combine_all_paths(paths,edges)
+    def pull(self,edges):
+        corner_fe, corner_error = self.combine_all_paths(edges)
         new_prob = self.get_probability(corner_fe,corner_error)
         if np.isnan(new_prob):
             self.probability = 0.5
@@ -42,34 +48,41 @@ class Node(object):
             self.probability = new_prob
         return scipy.stats.bernoulli.rvs(self.probability)
 
-
-    def find_all_paths(self,lig_ids,benchmark_id,n_steps):
-        # finding all the paths between this corner and the benchmark
+    def find_all_paths(self, benchmark_id,edges,n_steps):
         all_paths = []
-        all_steps = [x for x in itertools.combinations(lig_ids,2)]
-        for n_step in range(1,n_steps+1):
-            for path in itertools.combinations(all_steps,n_step):
-                endpoints = [[benchmark_id,self.index],[self.index,benchmark_id]] #only want paths that are from this corner to baseline corner
-                if [path[0][0],path[-1][-1]] in endpoints: # check that the combination of steps goes between what we are interested in
-                    cont = self.test_path_continuous(path) # see that the steps make up a continuous route
+        all_edges = [edge.indexes for edge in edges] + [edge.indexes[::-1] for edge in edges]
+        for n in range(1,n_steps+1):
+            for suggested_path in itertools.permutations(all_edges,n):
+                forward = [benchmark_id,self.index] # can start or end
+                if [suggested_path[0][0],suggested_path[-1][-1]] == forward:
+                    cont = self.test_path_continuous(suggested_path)
                     if cont:
-                        if cont not in [cont[1] for cont in all_paths]: # check it's not a duplicate path
-                            if cont[::-1] not in [cont[1] for cont in all_paths]: # check it's not in there backwards...
-                                # saving the bookends, the continuous path and the path of steps, very redundant
-                                all_paths.append([(cont[0], cont[-1]), cont, path])
-#                    # TODO this can check for cycle closures in future
-#                if path[0][0] == self.index and path[-1][-1] == self.index:
-#                    test_path_continuous(path)
+                        if cont not in all_paths:
+                            all_paths.append(suggested_path)
+        # TODO search for self closing loops
+        self.paths = all_paths
         return all_paths
 
-    def combine_all_paths(self,paths,edges):
+    def test_path_continuous(self,path):
+        previous = [x for x in path[0]]
+        continuous = [x for x in path[0]]
+        for step in path[1:]:
+            if step[0] != previous[1]:
+                return False  # non-continuous path
+            elif step[1] in continuous:
+                return False # self-looping path
+            else:
+                continuous.append(step[1])
+                previous = [x for x in step]
+        return True
+
+    def combine_all_paths(self,edges):
         all_fes = []
         all_variance = []
-        for path in paths:
-            route = path[2]
+        for path in self.paths:
             path_fe = 0.
             path_variance = 0.
-            for edge in route:
+            for edge in path:
                 contributor = [e for e in edges if e.indexes == list(edge)]
                 if len(contributor) == 1:
                     contributor[0].update()
@@ -89,20 +102,6 @@ class Node(object):
         frac_better = 1 - 0.5 * (1 + scipy.special.erf((-mu) / (sigma * np.sqrt(2))))
         return frac_better
 
-
-
-    def test_path_continuous(self,path):
-        previous = [x for x in path[0]]
-        continuous = [x for x in path[0]]
-        for step in path[1:]:
-            if step[0] != previous[1]:
-                return None  # non-continuous path
-            elif step[1] in continuous:
-                return None  # self-looping path
-            else:
-                continuous.append(step[1])
-                previous = [x for x in step]
-        return continuous
 
 class Edges(object):
     def __init__(self,liga,ligb):
