@@ -15,6 +15,8 @@ class Node(object):
         self.name = name
         self.fe = fe
         self.error = error
+        self.mu = 0.
+        self.sigma = 0.
         self.index = index
         self.probability = 0.5
         self.a = 1
@@ -22,12 +24,44 @@ class Node(object):
         self.paths = []
 
 
+    def plot_node(self,edges,plot_paths=True):
+        mus = []
+        sigmas = []
+        if plot_paths:
+            for path in self.paths:
+                path_fe = 0.
+                path_variance = 0.
+                for edge in path:
+                    contributor = [e for e in edges if e.indexes == list(edge)]
+                    if len(contributor) == 1:
+                        contributor[0].update()
+                        path_fe += contributor[0].mu  # forward
+                    if len(contributor) == 0:
+                        contributor = [e for e in edges if e.indexes[::-1] == list(edge)]
+                        path_fe -= contributor[0].mu  # backward
+                    if len(contributor) > 1:
+                        print('ERROR')
+                        quit()
+                    path_variance += (contributor[0].sigma) ** 2
+                mus.append(path_fe)
+                sigmas.append(path_variance**0.5)
+            for mu,sigma,path in zip(mus,sigmas,self.paths):
+                x = np.linspace(mu - 3 * sigma, mu + 3 * sigma, 100)
+                y = scipy.stats.norm.pdf(x, mu, sigma)
+                plt.plot(x, y,'--',label=str(path),alpha=0.3)
+        x = np.linspace(self.mu - 3 * self.sigma, self.mu + 3 * self.sigma, 100)
+        y = scipy.stats.norm.pdf(x, self.mu, self.sigma)
+        plt.plot(x, y)
+        plt.title(self.name)
+        return
+
+
     def print_paths(self):
         print('Printing paths for ligand {}'.format(self.name))
         for path in self.paths:
             print(path)
 
-    def plot(self,color='b'):
+    def plot_bandit(self,color='b'):
         x = np.linspace(0.,1.,100)
         plt.plot(x,scipy.stats.beta.pdf(x,self.a,self.b),color=color,alpha=0.3)
         return
@@ -40,8 +74,8 @@ class Node(object):
         self.b = self.b + 1 - success
 
     def pull(self,edges):
-        corner_fe, corner_error = self.combine_all_paths(edges)
-        new_prob = self.get_probability(corner_fe,corner_error)
+        self.mu, self.sigma = self.combine_all_paths(edges)
+        new_prob = self.get_probability(self.mu, self.sigma)
         if np.isnan(new_prob):
             self.probability = 0.5
         else:
@@ -107,12 +141,13 @@ class Edges(object):
     def __init__(self,liga,ligb):
         self.mu = 0.
         self.sigma = 1.
-        self.name = liga.name+'-'+ligb.name
+        self.name = str(liga.name+'-'+ligb.name).replace(' ','')
         self.bandits = []
         self.indexes = [liga.index, ligb.index]
         self.fe = liga.fe - ligb.fe
         self.error = np.sqrt((liga.error **2 + ligb.error**2))
         self.color = np.random.rand(3)
+        # TODO - this will need to be changed to initiate the 'real' sampling properly
         for i in [1,2,5]:
             self.bandits.append(Bandit(self.name,self.fe,self.error*i,color=self.color))
 
@@ -164,6 +199,7 @@ class Bandit(object):
         :param color: color used to plot ligand
         '''
         self.name = name.replace(' ','')
+        # TODO remove the following lines
         self.fe = fe #will be removed when sampling likelihood properly
         self.error = error # will be also taken out
         self.color = color
@@ -186,6 +222,7 @@ class Bandit(object):
     def reset_nsteps(self,newval = 0):
         self.nsteps = newval
 
+    # TODO - change this to sample from the simulation results
     def sample(self):
         '''
         :return: random variate from normal-inverse gamma function
