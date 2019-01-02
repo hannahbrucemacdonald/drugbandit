@@ -1,5 +1,5 @@
 """
-drug_bandit
+drugbandit
 Bayesian Bandit simulation
 """
 from setuptools import setup
@@ -9,7 +9,7 @@ DOCLINES = __doc__.split("\n")
 
 setup(
     # Self-descriptive entries which should always be present
-    name='drug_bandit',
+    name='drugbandit',
     author='Hannah Bruce Macdonald, Chodera Lab',
     description=DOCLINES[0],
     long_description="\n".join(DOCLINES[2:]),
@@ -18,12 +18,12 @@ setup(
     license='MIT',
 
     # Which Python importable modules should be included when your package is installed
-    packages=['drug_bandit', "drug_bandit.tests"],
+    packages=['drugbandit', "drugbandit.tests"],
 
     # Optional include package data to ship with your package
     # Comment out this line to prevent the files from being packaged with your software
     # Extend/modify the list to include/exclude other items as need be
-    package_data={'drug_bandit': ["data/*.dat"]
+    package_data={'drugbandit': ["data/*.dat"]
                   },
 
     # Additional entries you may want simply uncomment the lines you want and fill in the data

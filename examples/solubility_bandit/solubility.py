@@ -40,6 +40,7 @@ for step in range(1,bandit_steps+1):
     handles, labels = ax.get_legend_handles_labels()
     lgd = ax.legend(loc=9, bbox_to_anchor=(0.5, -0.1))
     plt.savefig('bayesplot{}.png'.format(step), bbox_extra_artists=(lgd,), bbox_inches='tight')
+    plt.clf()
 
     for bandit in bandits:
         bandit.print_bandit(step)
